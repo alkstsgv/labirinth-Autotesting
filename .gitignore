@@ -1,0 +1,42 @@
+# Build results
+bin/
+obj/
+*.exe
+*.dll
+*.pdb
+*.mdb
+*.nupkg
+*.nuget.props
+*.nuget.targets
+
+# Visual Studio / Rider / IDE
+.vs/
+.vscode/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.csproj.user
+*.resharper
+*.DotSettings
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Logs and databases
+*.log
+*.sqlite
+*.db
+
+# Playwright-specific
+test-results/
+videos/
+screenshots/
+
+# Environment
+.env
