@@ -1,6 +1,6 @@
 using Microsoft.Playwright;
 
-namespace LabirintTests.Pages;
+namespace labirinthAutoTesting.Pages;
 
 public abstract class BasePage
 {
@@ -11,8 +11,13 @@ public abstract class BasePage
         Page = page;
     }
 
-    public async Task WaitForPageToLoadAsync()
-    {
-        await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
-    }
+	public async Task WaitForPageToLoadAsync()
+	{
+		await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+	}
+	
+	public async Task ClickLocator(string selector)
+	{
+		await Page.ClickAsync(selector);
+	}
 }

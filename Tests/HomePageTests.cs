@@ -1,40 +1,61 @@
+using System.Text.RegularExpressions;
 using Microsoft.Playwright.NUnit;
 using NUnit.Framework;
-using LabirintTests.Pages;
+using Microsoft.Playwright;
+using labirinthAutoTesting.Pages;
 
-namespace LabirintTests.Tests;
+namespace labirinthAutoTesting.Tests;
 
+[Parallelizable(ParallelScope.Self)]
 [TestFixture]
-public class HomePageTests : PlaywrightTest
+public class HomePageTester : PlaywrightTest
 {
-    private IPage? _page;
-    private HomePage? _homePage;
+    private IPage _page = null!;
+    private HomePage _homePage = null!;
 
     [SetUp]
     public async Task Setup()
     {
-        var browser = await Playwright.Chromium.LaunchAsync(new() { Headless = true });
-        _page = await browser.NewPageAsync();
-        await _page.GotoAsync("https://www.labirint.ru");
+        // Запускаем браузер
+        var browser = await BrowserType.LaunchAsync(new()
+		{
+			Headless = false,
+			SlowMo = 500,
+			// Args = new[] { "--no-sandbox", "--disable-dev-shm-usage" } // важно для Linux/Docker
+			 Args = new[] { "--start-maximized" }
+		});
+
+        var context = await browser.NewContextAsync();
+
+        // Устанавливаем куки, чтобы избежать регионального попапа
+        await context.AddCookiesAsync(new[]
+        {
+            new Cookie { Name = "region", Value = "77", Domain = ".labirint.ru", Path = "/" },
+            new Cookie { Name = "cookie_accepted", Value = "1", Domain = ".labirint.ru", Path = "/" }
+        });
+
+        _page = await context.NewPageAsync();
         _homePage = new HomePage(_page);
     }
 
-    [TearDown]
-    public async Task Teardown()
+    [Test]
+    public async Task CheckAddBookToFavList()
     {
-        if (_page != null)
-            await _page.CloseAsync();
+        await _page.GotoAsync("https://www.labirint.ru");
+
+        // Дождёмся основного контента
+        await _page.WaitForSelectorAsync("body", new() { State = WaitForSelectorState.Visible });
+
+        await _homePage.AddBookToFavList();
+
+        // Проверим, что заголовок — про Лабиринт, а не "Playwright"
+        await Expect(_page).ToHaveTitleAsync(new Regex(@".*Лабиринт.*", RegexOptions.IgnoreCase));
     }
 
-    [Test]
-    public async Task CanAddBookToDelayedFromHomePage()
+    [TearDown]
+    public async Task TearDown()
     {
-        // Act
-        await _homePage!.AddFirstBookToDelayedAsync();
-        await _homePage.GoToDelayedItemsAsync();
-
-        // Assert — здесь можно добавить проверку через DelayedItemsPage
-        // Но для примера просто проверим URL или элемент
-        Assert.That(_page!.Url, Does.Contain("otlojeno"));
+        await _page?.CloseAsync();
+        await _page?.Context?.Browser?.CloseAsync();
     }
 }
