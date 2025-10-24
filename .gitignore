@@ -48,3 +48,6 @@ allure-report/
 # Coverage
 coverage/
 *.opencover.xml
+
+# Playwright test-report
+trace.zip

@@ -18,6 +18,7 @@ public abstract class BasePage
 	
 	public async Task ClickLocator(string selector)
 	{
-		await Page.ClickAsync(selector);
+		var locator = Page.Locator(selector);
+		await locator.ClickAsync();
 	}
 }

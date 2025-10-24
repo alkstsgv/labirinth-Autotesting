@@ -10,8 +10,8 @@ public class HomePage : BasePage
 
     public HomePage(IPage page) : base(page)
 	{
-		_listsWithBook = Page.Locator("product need-watch product_labeled watched gtm-watched");
-		_firstBookInTheRow = _listsWithBook.First.Locator("div.products-row rows1").First;
+		_listsWithBook = Page.Locator(".main-block-carousel .bestsellers .main-carousel");
+		_firstBookInTheRow = _listsWithBook.First.Locator(".product-padding").First;
 		_favoriteButton = _firstBookInTheRow.Locator("header-sprite");
 		_tooolTipWithActions = Page.Locator("js-putorder-block-change b-dropdown-window");
     }
@@ -26,13 +26,15 @@ public class HomePage : BasePage
 	{
 		await AddBookToFavList();
 		await _favoriteButton.ClickAsync();
-		await _tooolTipWithActions.GetByText("Убрать из отложенных").ClickAsync();
+		var removeButton = _tooolTipWithActions.GetByText("Убрать из отложенных");
+		await removeButton.ClickAsync();
 	}
 	
 	public async Task MoveToFavList()
 	{
 		await AddBookToFavList();
 		await _favoriteButton.ClickAsync();
-		await _tooolTipWithActions.GetByText("Перейти к отложенным").ClickAsync();
+		var moveButton = _tooolTipWithActions.GetByText("Перейти к отложенным");
+		await moveButton.ClickAsync();
 	}
 }
