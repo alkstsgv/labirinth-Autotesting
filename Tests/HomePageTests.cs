@@ -18,14 +18,15 @@ public class HomePageTester : BaseTest
 	[SetUp]
     public void SetupPageObjects()
     {
-        _homePage = new HomePage(Page); // Page уже есть из базового класса
+        _homePage = new HomePage(Page);
     }
 
 	[Test]
 	public async Task CheckAddBookToFavList()
 	{
 		await GotoAsync("/");
-		await _homePage.ClickLocator(".cookie-policy button");
+		// await _homePage.ClickLocator(".cookie-policy button");
+		await _homePage.AcceptModalWithCookies();
 		await _homePage.AddBookToFavList();
 	}
 	
