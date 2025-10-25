@@ -4,16 +4,16 @@ using Microsoft.Playwright.NUnit;
 namespace labirinthAutoTesting.Pages;
 public class HomePage : BasePage
 {
-	private readonly ILocator _favoriteButton = null!;
-	private readonly ILocator _listsWithBook = null!;
-	private readonly ILocator _firstBookInTheRow = null!;
-	private readonly ILocator _tooolTipWithActions = null!;
-	private readonly PlaywrightTest _test = new PlaywrightTest();
+	public  ILocator _favoriteButton = null!;
+	public  ILocator _listsWithBook = null!;
+	public  ILocator _firstBookInTheRow = null!;
+	public  ILocator _tooolTipWithActions = null!;
+	public PlaywrightTest _playwright = new PlaywrightTest();
 
 	public HomePage(IPage page) : base(page)
 	{
 		_listsWithBook = Page.Locator("#right-inner .main-block-carousel.bestsellers").First;
-		_firstBookInTheRow = _listsWithBook.Locator(".products-row.rows1");
+		_firstBookInTheRow = _listsWithBook.Locator(".products-row.rows1").First;
 		_favoriteButton = _firstBookInTheRow.First.Locator(".icon-fave").First;
 		_tooolTipWithActions = Page.Locator("js-putorder-block-change b-dropdown-window");
 	}
@@ -28,19 +28,18 @@ public class HomePage : BasePage
 	{
 		await _listsWithBook.IsVisibleAsync();
 		await _listsWithBook.ScrollIntoViewIfNeededAsync();
-		await _test.Expect(_listsWithBook).ToBeInViewportAsync();
-		await _test.Expect(_firstBookInTheRow).ToBeInViewportAsync();
+		await _playwright.Expect(_listsWithBook).ToBeInViewportAsync();
+		await _playwright.Expect(_firstBookInTheRow).ToBeInViewportAsync();
 		await _favoriteButton.ClickAsync();
 	}
 
 	public async Task DeleteFromFavList()
 	{
-		await AddBookToFavList();
 		await _favoriteButton.ClickAsync();
 		var removeButton = _tooolTipWithActions.GetByText("Убрать из отложенных");
 		await removeButton.ClickAsync();
 	}
-	
+
 	public async Task MoveToFavList()
 	{
 		await AddBookToFavList();
@@ -48,4 +47,6 @@ public class HomePage : BasePage
 		var moveButton = _tooolTipWithActions.GetByText("Перейти к отложенным");
 		await moveButton.ClickAsync();
 	}
+	
+
 }

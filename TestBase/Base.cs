@@ -1,4 +1,3 @@
-// Base/TestBase.cs
 using Microsoft.Playwright;
 using Microsoft.Playwright.NUnit;
 using NUnit.Framework;
