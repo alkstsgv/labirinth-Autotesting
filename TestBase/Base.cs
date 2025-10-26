@@ -35,10 +35,10 @@ public abstract class BaseTest : PlaywrightTest
 			Console.WriteLine($"Error starting tracing: {ex.Message}");
 		}
 
-		await Context.AddCookiesAsync(new[]
-        {
-            new Cookie { Name = "id_post", Value = "1912", Domain = ".labirint.ru", Path = "/" },
-        });
+		// await Context.AddCookiesAsync(new[]
+        // {
+        //     new Cookie { Name = "id_post", Value = "1912", Domain = ".labirint.ru", Path = "./" },
+        // });
 
   Page = await Context.NewPageAsync();
     }

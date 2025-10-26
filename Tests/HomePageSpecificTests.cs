@@ -13,8 +13,6 @@ namespace labirinthAutoTesting.Tests;
 public class HomePageTester : BaseTest
 {
 	private HomePage _homePage = null!;
-	// private IPage _page = null!;
-	private PlaywrightTest _playwright = new PlaywrightTest();
 
 	[SetUp]
 	public void SetupPageObjects()
@@ -22,47 +20,52 @@ public class HomePageTester : BaseTest
 		_homePage = new HomePage(Page);
 	}
 
-	[Test]
-	public async Task CheckAddBookToFavList()
+	[TestCase("/")]
+	public async Task CheckAddBookToFavList(string pagePath)
 	{
+
+		await Context.AddCookiesAsync(new[]
+        {
+            new Cookie { Name = "id_post", Value = "1912", Domain = ".labirint.ru", Path = pagePath },
+        });
+
 		Console.WriteLine("Тест-кейс 1. Добавление книги в «Отложено» по кнопке «Сердце» в блоке «Что почитать: выбор редакции»");
 
 		// === Подготовка теста === //
 		Console.WriteLine("Выполнение предусловий");
-		await GotoAsync("/");
+		await GotoAsync(pagePath);
 		await _homePage.AcceptModalWithCookies();
 
 		// === Шаги === //
 		Console.WriteLine("Проход по шагам тест-кейса");
 		await _homePage.AddBookToFavList();
-		var bookTitle = _homePage._firstBookInTheRow.Locator(".product-cover-long .cover").First;
+		var bookTitle = _homePage.FirstBookInTheRow.Locator(".product-cover-long .cover").First;
 		string? titleText = await bookTitle.GetAttributeAsync("href");
 		string? trimmedTitleText = titleText.Remove(titleText.Length - 1);
 
 
 		// === Ожидаемый результат === //
 		Console.WriteLine("Сверка ожидаемого результата");
-		var element = _homePage._favoriteButton;
+		var element = _homePage.FavoriteButton;
 		var popupAfterAddToFavList = Page.Locator("#minwidth .js-good-added");
 		var popupBookTitle = popupAfterAddToFavList.Locator(".b-basket-popinfo-e-text-m-add a[href]");
 		string? popupBookTitleName = await popupBookTitle.GetAttributeAsync("href");
 		var heartInNavbar = Page.Locator("#minwidth .top-link-main_putorder span.basket-in-dreambox-a");
 		string? heartInNavbarNumbers = await heartInNavbar.InnerTextAsync();
 
-		await _playwright.Expect(element).ToBeAttachedAsync();
-		await _playwright.Expect(element).ToBeVisibleAsync();
-		await _playwright.Expect(element).ToHaveCSSAsync("color", "rgb(173, 10, 5)");
+		await Expect(element).ToBeAttachedAsync();
+		await Expect(element).ToBeVisibleAsync();
+		await Expect(element).ToHaveCSSAsync("color", "rgb(173, 10, 5)");
 
-		await _playwright.Expect(popupAfterAddToFavList).ToBeAttachedAsync();
-		await _playwright.Expect(popupAfterAddToFavList).ToBeVisibleAsync();
-		await _playwright.Expect(popupAfterAddToFavList).ToBeInViewportAsync();
+		await Expect(popupAfterAddToFavList).ToBeAttachedAsync();
+		await Expect(popupAfterAddToFavList).ToBeVisibleAsync();
+		await Expect(popupAfterAddToFavList).ToBeInViewportAsync();
 		Assert.That(popupBookTitleName, Is.EqualTo(trimmedTitleText));
 
-		await _playwright.Expect(heartInNavbar).ToBeAttachedAsync();
-		await _playwright.Expect(heartInNavbar).ToBeVisibleAsync();
-		await _playwright.Expect(heartInNavbar).ToBeInViewportAsync();
+		await Expect(heartInNavbar).ToBeAttachedAsync();
+		await Expect(heartInNavbar).ToBeVisibleAsync();
+		await Expect(heartInNavbar).ToBeInViewportAsync();
 		Assert.That(heartInNavbarNumbers, Is.EqualTo("1"));
 	}
 
 }
-// #minwidth > div.top-header > div.b-header-outer > div.b-header > div.b-header__top-part.js-header-top-part > div.b-header-b-personal.col-xs-6.col-sm-6.col-md-5.col-md-push-5.col-lg-push-6.col-lg-4.col-xxl-push-7.col-xxl-3.js-toggle-menu-block > div > ul > li:nth-child(5) > a > span.b-header-b-personal-e-icon-wrapper.\<\!--b-header-b-personal-e-icon-wrapper-m-putorder--\> > span.b-header-b-personal-e-wrapper-m-closed > span.b-header-b-personal-e-icon-count-m-putorder.basket-in-dreambox-a
