@@ -4,6 +4,7 @@ using NUnit.Framework;
 using Microsoft.Playwright;
 using labirinthAutoTesting.Pages;
 using labirinthAutoTesting.TestBase;
+using Microsoft.VisualBasic;
 
 
 namespace labirinthAutoTesting.Tests;
@@ -32,7 +33,7 @@ public class ParametrizedFavoritesTester : BaseTest
 			new Cookie { Name = "id_post", Value = "1912", Domain = ".labirint.ru", Path = pagePath },
 		});
 
-		Console.WriteLine("Тест-кейс 1. Добавление книги в «Отложено» по кнопке «Сердце» в блоке «Что почитать: выбор редакции»");
+		Console.WriteLine("Тест-кейс 1. Общее. Добавление книги в «Отложено» по кнопке «Сердце» в блоке «Что почитать: выбор редакции»");
 
 		// === Подготовка теста === //
 		Console.WriteLine("Выполнение предусловий");
@@ -88,7 +89,7 @@ public class ParametrizedFavoritesTester : BaseTest
 			new Cookie { Name = "id_post", Value = "1912", Domain = ".labirint.ru", Path = pagePath },
 		});
 
-		Console.WriteLine("Тест-кейс 2. Переход в раздел «Отложено» через тултип в кнопке «Сердце» в блоке «Что почитать: выбор редакции»");
+		Console.WriteLine("Тест-кейс 2. Общее. Переход в раздел «Отложено» через тултип в кнопке «Сердце» в блоке «Что почитать: выбор редакции»");
 
 		// === Подготовка теста === //
 		Console.WriteLine("Выполнение предусловий");
@@ -117,7 +118,7 @@ public class ParametrizedFavoritesTester : BaseTest
 			new Cookie { Name = "id_post", Value = "1912", Domain = ".labirint.ru", Path = pagePath },
 		});
 
-		Console.WriteLine("Тест-кейс 3. Удаление книги из раздела «Отложено» через тултип в кнопке «Сердце» в блоке «Что почитать: выбор редакции»");
+		Console.WriteLine("Тест-кейс 3. Общее. Удаление книги из раздела «Отложено» через тултип в кнопке «Сердце» в блоке «Что почитать: выбор редакции»");
 
 		// === Подготовка теста === //
 		Console.WriteLine("Выполнение предусловий");
@@ -166,12 +167,46 @@ public class ParametrizedFavoritesTester : BaseTest
 		// === Шаги === //
 		Console.WriteLine("Проход по шагам тест-кейса");
 		await CommonPageActions.ClickFirstBookOnPage();
-		
+
 
 		// === Ожидаемый результат === //
 		Console.WriteLine("Сверка ожидаемого результата");
 		var pageUrl = Page.Url;
 		Console.WriteLine(pageUrl);
+
+	}
+	
+	[TestCase("/")]
+	[TestCase("/genres/2827/")]
+	[TestCase("/school/")]
+	public async Task CloseTooltip(string pagePath)
+	{
+		await Context.AddCookiesAsync(new[]
+		{
+			new Cookie { Name = "id_post", Value = "1912", Domain = ".labirint.ru", Path = pagePath },
+		});
+
+		Console.WriteLine("Тест-кейс 11. Общее. Закрытие тултипа после добавления товара в Отложенное");
+
+		// === Подготовка теста === //
+		Console.WriteLine("Выполнение предусловий");
+		await GotoAsync(pagePath);
+		await CommonPageActions.AcceptModalWithCookies();
+
+		// === Шаги === //
+		Console.WriteLine("Проход по шагам тест-кейса");
+		Console.WriteLine("Проход по шагам тест-кейса");
+		await CommonPageActions.GetFirstHeartOnPage();
+		await CommonPageActions.CheckHeartIconStatus();
+		await CommonPageActions.DoubleHeartIconClick();
+		var tooltip = Page.Locator(".js-putorder-block-change .b-dropdown-window-close");
+		await tooltip.ClickAsync();
+
+		// === Ожидаемый результат === //
+		Console.WriteLine("Сверка ожидаемого результата");
+		var pageUrl = Page.Url;
+		Console.WriteLine(pageUrl);
+		await Expect(tooltip).Not.ToBeVisibleAsync();
 
 	}
 }
