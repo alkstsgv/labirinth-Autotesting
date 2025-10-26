@@ -52,7 +52,6 @@ coverage/
 # Playwright test-report
 .git
 .gitignore
-README.md
 .env*
 *.md
 trace.zip
