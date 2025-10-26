@@ -13,13 +13,17 @@ public abstract class BaseTest : PlaywrightTest
     [SetUp]
     public async Task GlobalSetup()
 	{
-		
-        // Запускаем браузер
+
+
+		// Запускаем браузер
+		var headless = Environment.GetEnvironmentVariable("HEADLESS")?.ToLower() == "true";
+		var slowMoStr = Environment.GetEnvironmentVariable("SLOWMO");
+		float slowMo = string.IsNullOrEmpty(slowMoStr) ? 0 : float.Parse(slowMoStr);
         var browser = await BrowserType.LaunchAsync(new()
 		{
-			Headless = false,
-			SlowMo = 250,
-			// Args = new[] { "--no-sandbox", "--disable-dev-shm-usage" }
+			Headless = headless,
+			SlowMo = slowMo,
+			Args = new[] { "--no-sandbox", "--disable-dev-shm-usage" }
 		});
 
         // Создаём контекст с куками
@@ -47,15 +51,19 @@ public abstract class BaseTest : PlaywrightTest
     public async Task GlobalTeardown()
 	{
 		Console.WriteLine("Attempting to stop tracing");
-        try	
-        {
-			// Stop tracing and save to file
-			await Context?.Tracing.StopAsync(new TracingStopOptions
+        try
+		{
+			if (Context != null)
 			{
-				Path = "../../../trace.zip"
+				// Stop tracing and save to file
+				await Context?.Tracing.StopAsync(new TracingStopOptions
+				{
+					Path = "../../../trace.zip"
 
-			});
-			 Console.WriteLine("Tracing stopped");
+				});
+
+				Console.WriteLine("Tracing stopped");
+			 			}
         }
         catch (Exception ex)
         {

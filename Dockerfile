@@ -1,10 +1,11 @@
-FROM mcr.microsoft.com/playwright/dotnet:v1.48.0-focal
+FROM mcr.microsoft.com/playwright/dotnet:v1.55.0-noble 
 
 WORKDIR /app
 
+# Копируем остальной код
 COPY . .
 
 RUN dotnet restore
-RUN dotnet build
+RUN dotnet build --no-restore
 
-CMD ["dotnet", "test"]
+ENTRYPOINT ["dotnet"]

@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using Microsoft.Playwright.NUnit;
 using NUnit.Framework;
 using Microsoft.Playwright;
@@ -11,12 +12,13 @@ namespace labirinthAutoTesting.Tests;
 [TestFixture]
 public class ParametrizedFavoritesTester : BaseTest
 {
-	private HomePage _homePage = null!;
+	private CommonPageActions _commonPageActions = null!;
+	public CommonPageActions CommonPageActions => _commonPageActions;
 
 	[SetUp]
 	public void SetupPageObjects()
 	{
-		_homePage = new HomePage(Page);
+		_commonPageActions = new CommonPageActions(Page);
 	}
 
 
@@ -35,23 +37,18 @@ public class ParametrizedFavoritesTester : BaseTest
 		// === Подготовка теста === //
 		Console.WriteLine("Выполнение предусловий");
 		await GotoAsync(pagePath);
-		await _homePage.AcceptModalWithCookies();
+		await CommonPageActions.AcceptModalWithCookies();
 
 		// === Шаги === //
 		Console.WriteLine("Проход по шагам тест-кейса");
-		var heartIcon = Page.Locator("a.icon-fave:has(span.header-sprite)").First;
-		await heartIcon.IsVisibleAsync();
-		await heartIcon.IsEnabledAsync();
-		await heartIcon.ScrollIntoViewIfNeededAsync();
-		var productCard = heartIcon.Locator("xpath=ancestor::div[contains(@class, 'product')]");
+		await CommonPageActions.GetFirstHeartOnPage();
+		await CommonPageActions.CheckHeartIconStatus();
+		var productCard = CommonPageActions.HeartIcon.Locator("xpath=ancestor::div[contains(@class, 'product')]");
 		var bookTitle = productCard.Locator("a.cover").First;
 		string? titleText = await bookTitle.GetAttributeAsync("href");
 		string? trimmedTitleText = titleText.Remove(titleText.Length - 1);
-		await heartIcon.ClickAsync();
+		await CommonPageActions.HeartIcon.ClickAsync();
 
-
-		// === Ожидаемый результат === //
-		Console.WriteLine("Сверка ожидаемого результата");
 		var popupAfterAddToFavList = Page.Locator("#minwidth .js-good-added");
 		await popupAfterAddToFavList.IsVisibleAsync();
 		await popupAfterAddToFavList.IsEnabledAsync();
@@ -59,24 +56,25 @@ public class ParametrizedFavoritesTester : BaseTest
 		var popupBookTitle = popupAfterAddToFavList.Locator(".b-basket-popinfo-e-text-m-add a[href]");
 		string? trimmedPopupBookTitleName = await popupBookTitle.GetAttributeAsync("href");
 
-		var heartInNavbar = Page.Locator("#minwidth .top-link-main_putorder span.basket-in-dreambox-a");
-		await heartInNavbar.IsVisibleAsync();
-		await heartInNavbar.IsEnabledAsync();
-		await heartInNavbar.ScrollIntoViewIfNeededAsync();
-		string? heartInNavbarNumbers = await heartInNavbar.InnerTextAsync();
+		await CommonPageActions.GetHeartInNavbar();
+		string? heartInNavbarNumbers = await CommonPageActions.HeartInNavbar.InnerTextAsync();
 
-		await Expect(heartIcon).ToBeAttachedAsync();
-		await Expect(heartIcon).ToBeVisibleAsync();
-		await Expect(heartIcon).ToHaveCSSAsync("color", "rgb(173, 10, 5)");
+		// === Ожидаемый результат === //
+		Console.WriteLine("Сверка ожидаемого результата");
+		await Expect(CommonPageActions.HeartIcon).ToBeAttachedAsync();
+		await Expect(CommonPageActions.HeartIcon).ToBeVisibleAsync();
+		await Expect(CommonPageActions.HeartIcon).ToHaveClassAsync(new Regex(@"\bactive\b"));
 
 		await Expect(popupAfterAddToFavList).ToBeAttachedAsync();
 		await Expect(popupAfterAddToFavList).ToBeVisibleAsync();
 		await Expect(popupAfterAddToFavList).ToBeInViewportAsync();
+		
 		Assert.That(trimmedPopupBookTitleName, Is.EqualTo(trimmedTitleText));
 
-		await Expect(heartInNavbar).ToBeAttachedAsync();
-		await Expect(heartInNavbar).ToBeVisibleAsync();
-		await Expect(heartInNavbar).ToBeInViewportAsync();
+		await Expect(CommonPageActions.HeartInNavbar).ToBeAttachedAsync();
+		await Expect(CommonPageActions.HeartInNavbar).ToBeVisibleAsync();
+		await Expect(CommonPageActions.HeartInNavbar).ToBeInViewportAsync();
+		
 		Assert.That(heartInNavbarNumbers, Is.EqualTo("1"));
 	}
 
@@ -95,16 +93,13 @@ public class ParametrizedFavoritesTester : BaseTest
 		// === Подготовка теста === //
 		Console.WriteLine("Выполнение предусловий");
 		await GotoAsync(pagePath);
-		await _homePage.AcceptModalWithCookies();
+		await CommonPageActions.AcceptModalWithCookies();
 
 		// === Шаги === //
 		Console.WriteLine("Проход по шагам тест-кейса");
-		var heartIcon = Page.Locator("a.icon-fave:has(span.header-sprite)").First;
-		await heartIcon.IsVisibleAsync();
-		await heartIcon.IsEnabledAsync();
-		await heartIcon.ScrollIntoViewIfNeededAsync();
-		await heartIcon.ClickAsync();
-		await heartIcon.ClickAsync();
+		await CommonPageActions.GetFirstHeartOnPage();
+		await CommonPageActions.CheckHeartIconStatus();
+		await CommonPageActions.DoubleHeartIconClick();
 		await Page.Locator(".js-putorder-block-change .b-list-shell-item").Filter(new() { HasText = "Перейти к отложенным" }).ClickAsync();
 
 		// === Ожидаемый результат === //
@@ -113,8 +108,8 @@ public class ParametrizedFavoritesTester : BaseTest
 	}
 
 	[TestCase("/")]
-	// [TestCase("/genres/2827/")]
-	// [TestCase("/school/")]
+	[TestCase("/genres/2827/")]
+	[TestCase("/school/")]
 	public async Task VerifyBookRemovedFromFavGeneric(string pagePath)
 	{
 		await Context.AddCookiesAsync(new[]
@@ -127,34 +122,56 @@ public class ParametrizedFavoritesTester : BaseTest
 		// === Подготовка теста === //
 		Console.WriteLine("Выполнение предусловий");
 		await GotoAsync(pagePath);
-		await _homePage.AcceptModalWithCookies();
+		await CommonPageActions.AcceptModalWithCookies();
 
 		// === Шаги === //
 		Console.WriteLine("Проход по шагам тест-кейса");
-		var heartIcon = Page.Locator("a.icon-fave:has(span.header-sprite)").First;
-		await heartIcon.IsVisibleAsync();
-		await heartIcon.IsEnabledAsync();
-		// await heartIcon.ScrollIntoViewIfNeededAsync();
-		await heartIcon.ClickAsync();
-		await heartIcon.ClickAsync();
+		await CommonPageActions.GetFirstHeartOnPage();
+		await CommonPageActions.CheckHeartIconStatus();
+		await CommonPageActions.DoubleHeartIconClick();
 		await Page.Locator(".js-putorder-block-change .b-list-shell-item").Filter(new() { HasText = "Убрать из отложенных" }).ClickAsync();
+		await CommonPageActions.CheckHeartInNavbarStatus();
+		string? heartInNavbarNumbers = await CommonPageActions.HeartInNavbar.InnerTextAsync();
 
 		// === Ожидаемый результат === //
 		Console.WriteLine("Сверка ожидаемого результата");
-		var heartInNavbar = Page.Locator("#minwidth .top-link-main_putorder span.basket-in-dreambox-a");
-		await heartInNavbar.IsVisibleAsync();
-		await heartInNavbar.IsEnabledAsync();
-		// await heartInNavbar.ScrollIntoViewIfNeededAsync();
-		string? heartInNavbarNumbers = await heartInNavbar.InnerTextAsync();
+		await Expect(CommonPageActions.HeartIcon).ToBeAttachedAsync();
+		await Expect(CommonPageActions.HeartIcon).ToBeVisibleAsync();
+		await Expect(CommonPageActions.HeartIcon).Not.ToHaveClassAsync(new Regex(@"\bactive\b"));
 
-		await Expect(heartIcon).ToBeAttachedAsync();
-		await Expect(heartIcon).ToBeVisibleAsync();
-		await Page.Mouse.MoveAsync(0, 0);
-		await Expect(heartIcon).ToHaveCSSAsync("color", "rgb(24, 104, 160)");
+		await Expect(CommonPageActions.HeartInNavbar).ToBeAttachedAsync();
+		await Expect(CommonPageActions.HeartInNavbar).ToBeVisibleAsync();
+		await Expect(CommonPageActions.HeartInNavbar).ToBeInViewportAsync();
 
-		await Expect(heartInNavbar).ToBeAttachedAsync();
-		await Expect(heartInNavbar).ToBeVisibleAsync();
-		await Expect(heartInNavbar).ToBeInViewportAsync();
 		Assert.That(heartInNavbarNumbers, Is.EqualTo("0"));
+	}
+
+	[TestCase("/")]
+	[TestCase("/genres/2827/")]
+	[TestCase("/school/")]
+	public async Task AddBookToFavFromBook(string pagePath)
+	{
+		await Context.AddCookiesAsync(new[]
+		{
+			new Cookie { Name = "id_post", Value = "1912", Domain = ".labirint.ru", Path = pagePath },
+		});
+
+		Console.WriteLine("Тест-кейс 9. Карточка книги. Добавление в избранное");
+
+		// === Подготовка теста === //
+		Console.WriteLine("Выполнение предусловий");
+		await GotoAsync(pagePath);
+		await CommonPageActions.AcceptModalWithCookies();
+
+		// === Шаги === //
+		Console.WriteLine("Проход по шагам тест-кейса");
+		await CommonPageActions.ClickFirstBookOnPage();
+		
+
+		// === Ожидаемый результат === //
+		Console.WriteLine("Сверка ожидаемого результата");
+		var pageUrl = Page.Url;
+		Console.WriteLine(pageUrl);
+
 	}
 }

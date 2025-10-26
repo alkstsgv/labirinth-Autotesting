@@ -1,0 +1,17 @@
+services:
+  labirinth-tests:
+    build: .
+    volumes:
+      - .:/app  # Монтирует текущую папку в /app
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    environment:
+      - HEADLESS=true
+      - SLOWMO=250
+    command: ["test", "labirinthAutoTesting.csproj"]

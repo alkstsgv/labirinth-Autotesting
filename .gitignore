@@ -50,4 +50,26 @@ coverage/
 *.opencover.xml
 
 # Playwright test-report
+.git
+.gitignore
+README.md
+.env*
+*.md
 trace.zip
+bin/
+obj/
+
+# Docker
+docker-compose.override.yml
+
+# .NET
+*.cache
+packages/
+TestResults/
+
+# Logs
+logs/
+
+# Secrets
+.env.local
+secrets.json
