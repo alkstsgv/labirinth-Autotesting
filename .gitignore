@@ -50,13 +50,7 @@ coverage/
 *.opencover.xml
 
 # Playwright test-report
-.git
-.gitignore
-.env*
-*.md
 trace.zip
-bin/
-obj/
 
 # Docker
 docker-compose.override.yml
