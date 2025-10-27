@@ -44,21 +44,14 @@ public class CommonPageActions : BasePage
 	}
 	public async Task CheckHeartInNavbarStatus()
 	{
+		await GetHeartInNavbar();
 		await _heartInNavbar.IsVisibleAsync();
 		await _heartInNavbar.IsEnabledAsync();
 		await _heartInNavbar.ScrollIntoViewIfNeededAsync();
 		await Task.CompletedTask;
 	}
 
-	public async Task ClickFirstBookOnPage()
-	{
-		await GetFirstHeartOnPage();
-		await CheckHeartIconStatus();
-		var productCard = _heartIcon.Locator("xpath=ancestor::div[contains(@class, 'product')]").First;
-		await productCard.ClickAsync();
-		await Task.CompletedTask;
 
-	}
 
 	public async Task DoubleHeartIconClick()
 	{
@@ -66,4 +59,5 @@ public class CommonPageActions : BasePage
 		await _heartIcon.ClickAsync();
 		await Task.CompletedTask;
 	}
+
 }

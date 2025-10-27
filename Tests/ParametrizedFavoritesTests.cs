@@ -2,16 +2,15 @@ using System.Text.RegularExpressions;
 using Microsoft.Playwright.NUnit;
 using NUnit.Framework;
 using Microsoft.Playwright;
+using Microsoft.VisualBasic;
 using labirinthAutoTesting.Pages;
 using labirinthAutoTesting.TestBase;
-using Microsoft.VisualBasic;
-
 
 namespace labirinthAutoTesting.Tests;
 
 [Parallelizable(ParallelScope.Self)]
 [TestFixture]
-public class ParametrizedFavoritesTester : BaseTest
+public class ParametrizedFavoritesTests : BaseTest
 {
 	private CommonPageActions _commonPageActions = null!;
 	public CommonPageActions CommonPageActions => _commonPageActions;
@@ -26,7 +25,7 @@ public class ParametrizedFavoritesTester : BaseTest
 	[TestCase("/")]
 	[TestCase("/genres/2827/")]
 	[TestCase("/school/")]
-	public async Task VerifyBookAddedToFavListGeneric (string pagePath)
+	public async Task VerifyBookAddedToFavListGeneric(string pagePath)
 	{
 		await Context.AddCookiesAsync(new[]
 		{
@@ -69,20 +68,20 @@ public class ParametrizedFavoritesTester : BaseTest
 		await Expect(popupAfterAddToFavList).ToBeAttachedAsync();
 		await Expect(popupAfterAddToFavList).ToBeVisibleAsync();
 		await Expect(popupAfterAddToFavList).ToBeInViewportAsync();
-		
+
 		Assert.That(trimmedPopupBookTitleName, Is.EqualTo(trimmedTitleText));
 
 		await Expect(CommonPageActions.HeartInNavbar).ToBeAttachedAsync();
 		await Expect(CommonPageActions.HeartInNavbar).ToBeVisibleAsync();
 		await Expect(CommonPageActions.HeartInNavbar).ToBeInViewportAsync();
-		
+
 		Assert.That(heartInNavbarNumbers, Is.EqualTo("1"));
 	}
 
 	[TestCase("/")]
 	[TestCase("/genres/2827/")]
 	[TestCase("/school/")]
-	public async Task VerifyPageWithAddedFavBooksGeneric (string pagePath)
+	public async Task VerifyPageWithAddedFavBooksGeneric(string pagePath)
 	{
 		await Context.AddCookiesAsync(new[]
 		{
@@ -150,35 +149,6 @@ public class ParametrizedFavoritesTester : BaseTest
 	[TestCase("/")]
 	[TestCase("/genres/2827/")]
 	[TestCase("/school/")]
-	public async Task AddBookToFavFromBook(string pagePath)
-	{
-		await Context.AddCookiesAsync(new[]
-		{
-			new Cookie { Name = "id_post", Value = "1912", Domain = ".labirint.ru", Path = pagePath },
-		});
-
-		Console.WriteLine("Тест-кейс 9. Карточка книги. Добавление в избранное");
-
-		// === Подготовка теста === //
-		Console.WriteLine("Выполнение предусловий");
-		await GotoAsync(pagePath);
-		await CommonPageActions.AcceptModalWithCookies();
-
-		// === Шаги === //
-		Console.WriteLine("Проход по шагам тест-кейса");
-		await CommonPageActions.ClickFirstBookOnPage();
-
-
-		// === Ожидаемый результат === //
-		Console.WriteLine("Сверка ожидаемого результата");
-		var pageUrl = Page.Url;
-		Console.WriteLine(pageUrl);
-
-	}
-	
-	[TestCase("/")]
-	[TestCase("/genres/2827/")]
-	[TestCase("/school/")]
 	public async Task CloseTooltip(string pagePath)
 	{
 		await Context.AddCookiesAsync(new[]
@@ -186,7 +156,7 @@ public class ParametrizedFavoritesTester : BaseTest
 			new Cookie { Name = "id_post", Value = "1912", Domain = ".labirint.ru", Path = pagePath },
 		});
 
-		Console.WriteLine("Тест-кейс 11. Общее. Закрытие тултипа после добавления товара в Отложенное");
+		Console.WriteLine("Тест-кейс 4. Общее. Закрытие тултипа после добавления товара в Отложенное");
 
 		// === Подготовка теста === //
 		Console.WriteLine("Выполнение предусловий");
@@ -210,3 +180,4 @@ public class ParametrizedFavoritesTester : BaseTest
 
 	}
 }
+

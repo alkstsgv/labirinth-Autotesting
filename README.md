@@ -96,14 +96,22 @@ environment:
   2. При изменении кода: `docker-compose run --rm labirinth-tests dotnet build` (перекомпилировать).
   3. Запустите тесты: `docker-compose run --rm labirinth-tests dotnet test --filter "TestName"` (или все: `docker-compose up`).
   4. Очистите старые контейнеры: `docker-compose down --remove-orphans` или `docker system prune`.
+  5. Просмотр логов трассировки: Скачайте `trace.zip` из контейнера (`docker cp <container_id>:/app/trace.zip .`) и откройте в Playwright Trace Viewer (`playwright show-trace trace.zip`).
 - **Prod (production)**: Соберите образ один раз (`docker-compose build --no-cache`), запустите тесты в изолированной среде. Используйте headless=true и slowmo=0 для скорости. Подходит для CI/CD пайплайнов.
 
 ## Доступные тесты
 - **ParametrizedFavoritesTests**: Параметризованные тесты для добавления/удаления книг в избранное на разных страницах (`/`, `/genres/2827/`, `/school/`).
-- **BookPageTests**: Тесты для страницы конкретной книги (пока пустой; добавьте тесты для добавления в избранное на BookPage).
+  - [Тест-кейс 1](Wiki/TestCases/TestCase1.md): Добавление книги в «Отложено» на главной странице.
+  - [Тест-кейс 2](Wiki/TestCases/TestCase2.md): Переход в раздел «Отложено» через тултип.
+  - [Тест-кейс 3](Wiki/TestCases/TestCase3.md): Удаление книги из «Отложено» через тултип.
+  - [Тест-кейс 4](Wiki/TestCases/TestCase4.md): Закрытие тултипа после добавления товара.
+- **BookPageTests**: Тесты для страницы конкретной книги.
+  - [Тест-кейс 5](Wiki/TestCases/TestCase5.md): Добавление книги в «Отложено» на странице книги.
+  - [Тест-кейс 6](Wiki/TestCases/TestCase6.md): Удаление книги из избранного на странице книги.
 
 ## Отладка
 - Трассировка сохраняется в `trace.zip` (в контейнере — внутри `/app`).
+- Для просмотра логов трассировки: `playwright show-trace trace.zip` (требуется установка Playwright CLI: `dotnet tool install --global Microsoft.Playwright.CLI`).
 - Для локальной отладки установите `HEADLESS=false` и `SLOWMO=250`.
 - Логи выводятся в консоль.
 
@@ -111,5 +119,9 @@ environment:
 - Добавляйте новые тесты в `Tests/`.
 - Расширяйте классы в `Pages/` и `TestBase/` для новых страниц/действий.
 - Обновляйте селекторы в коде при изменениях на сайте.
+
+## Документация тест-кейсов
+
+Подробные описания тест-кейсов доступны в [Wiki](Wiki/README.md).
 
 Если возникнут вопросы, проверьте логи или обратитесь к документации Playwright.
