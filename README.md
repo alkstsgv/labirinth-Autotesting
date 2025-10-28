@@ -38,9 +38,14 @@
    dotnet test
    ```
 
-5. Запустите конкретный тест (например, по имени):
+5. Запустите все тесты из файла (класса) BookPageTests.cs:
    ```
-   dotnet test --filter "VerifyBookAddedToFavListGeneric"
+   dotnet test --filter "FullyQualifiedName~BookPageTests"
+   ```
+
+6. Запустите все тесты из папки Tests/:
+   ```
+   dotnet test --filter "TestNamespace=labirinthAutoTesting.Tests"
    ```
 
 ### Запуск в Docker
@@ -56,15 +61,26 @@
    docker-compose up
    ```
 
-4. Запустите конкретный тест:
+4. Запустите все тесты:
    ```
-   docker-compose run labirinth-tests --filter "VerifyBookAddedToFavListGeneric"
+   docker-compose run labirinth-tests dotnet test labirinthAutoTesting.csproj
+   ```
+
+5. Запустите все тесты из файла (класса) BookPageTests.cs:
+   ```
+   docker-compose run labirinth-tests dotnet test labirinthAutoTesting.csproj --filter "FullyQualifiedName~BookPageTests"
+   ```
+
+6. Запустите все тесты из папки Tests/:
+   ```
+   docker-compose run labirinth-tests dotnet test labirinthAutoTesting.csproj --filter "TestNamespace=labirinthAutoTesting.Tests"
    ```
 
 5. Для быстрой разработки (hot reload): После сборки монтируйте код и перекомпилируйте при изменениях:
    ```
    docker-compose run labirinth-tests dotnet build  # Перекомпилировать изменения
-   docker-compose run labirinth-tests --filter "TestName"  # Запустить тесты
+   docker-compose run labirinth-tests dotnet test labirinthAutoTesting.csproj --filter "FullyQualifiedName~BookPageTests"  # Запустить тесты из BookPageTests.cs
+   docker-compose run labirinth-tests dotnet test labirinthAutoTesting.csproj --filter "TestNamespace=labirinthAutoTesting.Tests"  # Запустить все тесты из папки Tests/
    ```
    Изменения в коде сразу отражаются благодаря volume в `docker-compose.yml`.
 
@@ -94,9 +110,11 @@ environment:
 - **Dev (разработка)**: Используйте volume для hot reload. Изменяйте код локально, перекомпилируйте в контейнере и запускайте тесты без пересборки образа. Подходит для быстрой итерации. `docker-compose run` создаёт новые контейнеры каждый раз — используйте `--rm` для автоматического удаления после выполнения, или очищайте вручную.
   1. Соберите образ один раз: `docker-compose build`.
   2. При изменении кода: `docker-compose run --rm labirinth-tests dotnet build` (перекомпилировать).
-  3. Запустите тесты: `docker-compose run --rm labirinth-tests dotnet test --filter "TestName"` (или все: `docker-compose up`).
-  4. Очистите старые контейнеры: `docker-compose down --remove-orphans` или `docker system prune`.
-  5. Просмотр логов трассировки: Скачайте `trace.zip` из контейнера (`docker cp <container_id>:/app/trace.zip .`) и откройте в Playwright Trace Viewer (`playwright show-trace trace.zip`).
+  3. Запустите все тесты: `docker-compose run --rm labirinth-tests dotnet test labirinthAutoTesting.csproj`.
+  4. Запустите все тесты из файла (класса) BookPageTests.cs: `docker-compose run --rm labirinth-tests dotnet test labirinthAutoTesting.csproj --filter "FullyQualifiedName~BookPageTests"`.
+  5. Запустите все тесты из папки Tests/: `docker-compose run --rm labirinth-tests dotnet test labirinthAutoTesting.csproj --filter "TestNamespace=labirinthAutoTesting.Tests"`.
+  6. Очистите старые контейнеры: `docker-compose down --remove-orphans` или `docker system prune`.
+  7. Просмотр логов трассировки: Скачайте `trace.zip` из контейнера (`docker cp <container_id>:/app/trace.zip .`) и откройте в Playwright Trace Viewer (`playwright show-trace trace.zip`).
 - **Prod (production)**: Соберите образ один раз (`docker-compose build --no-cache`), запустите тесты в изолированной среде. Используйте headless=true и slowmo=0 для скорости. Подходит для CI/CD пайплайнов.
 
 ## Доступные тесты

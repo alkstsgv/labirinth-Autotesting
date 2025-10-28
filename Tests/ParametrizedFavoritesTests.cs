@@ -5,6 +5,7 @@ using Microsoft.Playwright;
 using Microsoft.VisualBasic;
 using labirinthAutoTesting.Pages;
 using labirinthAutoTesting.TestBase;
+using labirinthAutoTesting.Helpers;
 
 namespace labirinthAutoTesting.Tests;
 
@@ -14,18 +15,20 @@ public class ParametrizedFavoritesTests : BaseTest
 {
 	private CommonPageActions _commonPageActions = null!;
 	public CommonPageActions CommonPageActions => _commonPageActions;
+	private Helper _helper; public Helper Helper => _helper ??= new Helper(Page);
 
 	[SetUp]
 	public void SetupPageObjects()
 	{
 		_commonPageActions = new CommonPageActions(Page);
+		_helper = new Helper(Page);
 	}
 
 
 	[TestCase("/")]
 	[TestCase("/genres/2827/")]
 	[TestCase("/school/")]
-	public async Task VerifyBookAddedToFavListGeneric(string pagePath)
+	public async Task TestCase1_VerifyBookAddedToFavListGeneric(string pagePath)
 	{
 		await Context.AddCookiesAsync(new[]
 		{
@@ -50,9 +53,9 @@ public class ParametrizedFavoritesTests : BaseTest
 		await CommonPageActions.HeartIcon.ClickAsync();
 
 		var popupAfterAddToFavList = Page.Locator("#minwidth .js-good-added");
-		await popupAfterAddToFavList.IsVisibleAsync();
-		await popupAfterAddToFavList.IsEnabledAsync();
+		await Helper.WaitBetweenActions(popupAfterAddToFavList);
 		await popupAfterAddToFavList.ScrollIntoViewIfNeededAsync();
+		await Helper.WaitBetweenActions(popupAfterAddToFavList);
 		var popupBookTitle = popupAfterAddToFavList.Locator(".b-basket-popinfo-e-text-m-add a[href]");
 		string? trimmedPopupBookTitleName = await popupBookTitle.GetAttributeAsync("href");
 
@@ -81,7 +84,7 @@ public class ParametrizedFavoritesTests : BaseTest
 	[TestCase("/")]
 	[TestCase("/genres/2827/")]
 	[TestCase("/school/")]
-	public async Task VerifyPageWithAddedFavBooksGeneric(string pagePath)
+	public async Task TestCase2_VerifyPageWithAddedFavBooksGeneric(string pagePath)
 	{
 		await Context.AddCookiesAsync(new[]
 		{
@@ -110,7 +113,7 @@ public class ParametrizedFavoritesTests : BaseTest
 	[TestCase("/")]
 	[TestCase("/genres/2827/")]
 	[TestCase("/school/")]
-	public async Task VerifyBookRemovedFromFavGeneric(string pagePath)
+	public async Task TestCase3_VerifyBookRemovedFromFavGeneric(string pagePath)
 	{
 		await Context.AddCookiesAsync(new[]
 		{
@@ -149,7 +152,7 @@ public class ParametrizedFavoritesTests : BaseTest
 	[TestCase("/")]
 	[TestCase("/genres/2827/")]
 	[TestCase("/school/")]
-	public async Task CloseTooltip(string pagePath)
+	public async Task TestCase4_CloseTooltip(string pagePath)
 	{
 		await Context.AddCookiesAsync(new[]
 		{
@@ -161,21 +164,22 @@ public class ParametrizedFavoritesTests : BaseTest
 		// === Подготовка теста === //
 		Console.WriteLine("Выполнение предусловий");
 		await GotoAsync(pagePath);
+		var pageUrl = Page.Url;
 		await CommonPageActions.AcceptModalWithCookies();
 
 		// === Шаги === //
-		Console.WriteLine("Проход по шагам тест-кейса");
 		Console.WriteLine("Проход по шагам тест-кейса");
 		await CommonPageActions.GetFirstHeartOnPage();
 		await CommonPageActions.CheckHeartIconStatus();
 		await CommonPageActions.DoubleHeartIconClick();
 		var tooltip = Page.Locator(".js-putorder-block-change .b-dropdown-window-close");
 		await tooltip.ClickAsync();
+		await Page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
 
 		// === Ожидаемый результат === //
 		Console.WriteLine("Сверка ожидаемого результата");
-		var pageUrl = Page.Url;
-		Console.WriteLine(pageUrl);
+		var pageUrlAfterMoves = Page.Url;
+		await Expect(Page).ToHaveURLAsync(pageUrlAfterMoves);
 		await Expect(tooltip).Not.ToBeVisibleAsync();
 
 	}

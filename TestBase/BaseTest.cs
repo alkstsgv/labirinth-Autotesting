@@ -1,3 +1,4 @@
+using DotNetEnv;
 using Microsoft.Playwright;
 using Microsoft.Playwright.NUnit;
 using NUnit.Framework;
@@ -12,16 +13,25 @@ public abstract class BaseTest : PlaywrightTest
 
     [SetUp]
     public async Task GlobalSetup()
-	{
+ {
+  // Загружаем переменные из .env или .env_orig для локального запуска
+  var envFile = File.Exists(".env") ? ".env" : ".env_orig";
+  if (File.Exists(envFile))
+  {
+   DotNetEnv.Env.Load(envFile);
+  }
 
+  // Запускаем браузер
+  var headlessStr = Environment.GetEnvironmentVariable("HEADLESS");
+  bool headless = string.IsNullOrEmpty(headlessStr) || headlessStr.ToLower() == "false"; // true по умолчанию
+  var slowMoStr = Environment.GetEnvironmentVariable("SLOWMO");
+  float slowMo = string.IsNullOrEmpty(slowMoStr) ? 0 : float.Parse(slowMoStr);
 
-		// Запускаем браузер
-		var headless = Environment.GetEnvironmentVariable("HEADLESS")?.ToLower() == "true";
-		var slowMoStr = Environment.GetEnvironmentVariable("SLOWMO");
-		float slowMo = string.IsNullOrEmpty(slowMoStr) ? 0 : float.Parse(slowMoStr);
+  Console.WriteLine($"Loaded from {envFile}, HEADLESS:{headless.GetType()}, Headless mode: {headless}");
+  Console.WriteLine($"SLOWMO: {slowMoStr}, SlowMo: {slowMo}");
         var browser = await BrowserType.LaunchAsync(new()
 		{
-			Headless = headless,
+			Headless = true,
 			SlowMo = slowMo,
 			Args = new[] { "--no-sandbox", "--disable-dev-shm-usage" }
 		});
@@ -38,12 +48,6 @@ public abstract class BaseTest : PlaywrightTest
 		{
 			Console.WriteLine($"Error starting tracing: {ex.Message}");
 		}
-
-		// await Context.AddCookiesAsync(new[]
-        // {
-        //     new Cookie { Name = "id_post", Value = "1912", Domain = ".labirint.ru", Path = "./" },
-        // });
-
   Page = await Context.NewPageAsync();
     }
 

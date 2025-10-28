@@ -6,6 +6,8 @@ using Microsoft.VisualBasic;
 
 using labirinthAutoTesting.Pages;
 using labirinthAutoTesting.TestBase;
+using labirinthAutoTesting.Helpers;
+using System.Data;
 
 namespace labirinthAutoTesting.Tests;
 
@@ -17,17 +19,19 @@ public class BookPageTests : BaseTest
 	public BookPage BookPage => _bookPage;
 	private CommonPageActions _commonPageActions = null!;
 	public CommonPageActions CommonPageActions => _commonPageActions;
-	
+	private Helper _helper; public Helper Helper => _helper ??= new Helper(Page);
+
 
 	[SetUp]
 	public void SetupPageObjects()
 	{
 		_bookPage = new BookPage(Page);
 		_commonPageActions = new CommonPageActions(Page);
+		_helper = new Helper(Page);
 	}
 
 	[TestCase("/")]
-	public async Task AddBookToFavFromBookPage(string pagePath)
+	public async Task TestCase5_AddBookToFavFromBookPage(string pagePath)
 	{
 		await Context.AddCookiesAsync(new[]
 		{
@@ -45,19 +49,20 @@ public class BookPageTests : BaseTest
 		Console.WriteLine("Проход по шагам тест-кейса");
 		await BookPage.ClickFirstBookOnPage();
 		await BookPage.ClickProductHeartIconButton();
-		await BookPage.ClickProductHeartIconButton();
-		var heartInNavbar = Page.GetByLabel("Перейти в раздел отложенных товаров").Locator("span").Nth(1);
+		await BookPage.CheckHeartButtonStatus();
+		var heartInNavbar = BookPage.ProductHeartInNavbar.Locator("span").Nth(1);
 		string? heartInNavbarNumbers = await heartInNavbar.InnerTextAsync();
 		var imgProductHeartIcon = BookPage.ProductHeartIconButton.Locator("img");
 
 		// === Ожидаемый результат === //
 		Console.WriteLine("Сверка ожидаемого результата");
 		await Expect(imgProductHeartIcon).ToHaveAttributeAsync("alt", "heart-red");
+		Assert.That(await heartInNavbar.IsVisibleAsync(), Is.True);
 		Assert.That(heartInNavbarNumbers, Is.EqualTo("1"));
-	}	
+	}
 
 	[TestCase("/")]
-	public async Task RemoveBookFromFavFromList (string pagePath)
+	public async Task TestCase6_RemoveBookFromFavFromList(string pagePath)
 	{
 		await Context.AddCookiesAsync(new[]
 		{
@@ -75,16 +80,80 @@ public class BookPageTests : BaseTest
 		Console.WriteLine("Проход по шагам тест-кейса");
 		await BookPage.ClickFirstBookOnPage();
 		await BookPage.ClickProductHeartIconButton();
+		await BookPage.CheckHeartButtonStatus();
 		await BookPage.ClickProductHeartIconButton();
-		await BookPage.ClickProductHeartIconButton();
-		await BookPage.ClickProductHeartIconButton();
-		var heartInNavbar = Page.GetByLabel("Перейти в раздел отложенных товаров").Locator("span").Nth(1);
+		await BookPage.CheckHeartButtonStatus();
+		var heartInNavbar = BookPage.ProductHeartInNavbar.Locator("span").Nth(1);
 		var imgProductHeartIcon = BookPage.ProductHeartIconButton.Locator("img");
 
 		// === Ожидаемый результат === //
 		Console.WriteLine("Сверка ожидаемого результата");
 		await Expect(imgProductHeartIcon).ToHaveAttributeAsync("alt", "heart-outline-gray-700");
 		Assert.That(await heartInNavbar.IsVisibleAsync(), Is.False);
-	}	
+	}
 
+	[TestCase("/")]
+	public async Task TestCase7_AddBookToFavFromRecList(string pagePath)
+	{
+		await Context.AddCookiesAsync(new[]
+		{
+			new Cookie { Name = "id_post", Value = "1912", Domain = ".labirint.ru", Path = pagePath },
+		});
+
+		Console.WriteLine("Тест-кейс 7. Добавление книги в Отложенное из блока с рекомендациями «Книги из жанра» ");
+
+		// === Подготовка теста === //
+		Console.WriteLine("Выполнение предусловий");
+		await GotoAsync("/");
+		await CommonPageActions.AcceptModalWithCookies();
+
+		// === Шаги === //
+		Console.WriteLine("Проход по шагам тест-кейса");
+		await BookPage.ClickFirstBookOnPage();
+		// await Page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
+		await BookPage.ClickProductRecommendationsHeartIconButton();
+		await BookPage.CheckHeartButtonRecommendationsStatus();
+		var heartInNavbar = BookPage.ProductHeartInNavbar.Locator("span").Nth(1);
+		string? heartInNavbarNumbers = await heartInNavbar.InnerTextAsync();
+		var imgProductHeartIcon = BookPage.ProductListHeart.Locator("img");
+
+		// === Ожидаемый результат === //
+		Console.WriteLine("Сверка ожидаемого результата");
+		await Expect(imgProductHeartIcon).ToHaveAttributeAsync("alt", "heart-red");
+		Assert.That(await heartInNavbar.IsVisibleAsync(), Is.True);
+		Assert.That(heartInNavbarNumbers, Is.EqualTo("1"));
+	}	
+	
+	[TestCase("/")]
+	public async Task TestCase8_RemoveAddedBookFromFromRecList(string pagePath)
+	{
+		await Context.AddCookiesAsync(new[]
+		{
+			new Cookie { Name = "id_post", Value = "1912", Domain = ".labirint.ru", Path = pagePath },
+		});
+
+		Console.WriteLine("Тест-кейс 8. Удаление добавленной книги из блока с рекомендациями «Книги из жанра» из «Отложенное»");
+
+		// === Подготовка теста === //
+		Console.WriteLine("Выполнение предусловий");
+		await GotoAsync("/");
+		await CommonPageActions.AcceptModalWithCookies();
+
+		// === Шаги === //
+		Console.WriteLine("Проход по шагам тест-кейса");
+		await BookPage.ClickFirstBookOnPage();
+		// await Page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
+		await BookPage.ClickProductRecommendationsHeartIconButton();
+		await BookPage.CheckHeartButtonRecommendationsStatus();
+		await BookPage.ClickProductRecommendationsHeartIconButton();
+		await BookPage.CheckHeartButtonRecommendationsStatus();
+		var heartInNavbar = BookPage.ProductHeartInNavbar.Locator("span").Nth(1);
+		var imgProductHeartIcon = BookPage.ProductListHeart.Locator("img");
+
+		// === Ожидаемый результат === //
+		Console.WriteLine("Сверка ожидаемого результата");
+		await Expect(imgProductHeartIcon).ToHaveAttributeAsync("alt", "heart-outline-gray-700");
+		await Expect(imgProductHeartIcon).ToHaveAttributeAsync("alt", "heart-outline-gray-700");
+		Assert.That(await heartInNavbar.IsVisibleAsync(), Is.False);
+	}	
 }
