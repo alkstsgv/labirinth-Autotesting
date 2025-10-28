@@ -25,6 +25,10 @@ public class ParametrizedFavoritesTests : BaseTest
 	}
 
 
+	/// <summary>
+	/// Тест-кейс 1: Добавление книги в «Отложено» по кнопке «Сердце» в блоке «Что почитать: выбор редакции».
+	/// </summary>
+	/// <param name="pagePath">Путь к странице (например, "/").</param>
 	[TestCase("/")]
 	[TestCase("/cabinet/putorder/")]
 	[TestCase("/genres/2827/")]
@@ -82,6 +86,10 @@ public class ParametrizedFavoritesTests : BaseTest
 		Assert.That(heartInNavbarNumbers, Is.EqualTo("1"));
 	}
 
+	/// <summary>
+	/// Тест-кейс 2: Переход в раздел «Отложено» через тултип в кнопке «Сердце».
+	/// </summary>
+	/// <param name="pagePath">Путь к странице (например, "/").</param>
 	[TestCase("/")]
 	[TestCase("/cabinet/putorder/")]
 	[TestCase("/genres/2827/")]
@@ -110,6 +118,10 @@ public class ParametrizedFavoritesTests : BaseTest
 		await Expect(Page).ToHaveURLAsync("https://www.labirint.ru/cabinet/putorder/");
 	}
 
+	/// <summary>
+	/// Тест-кейс 3: Удаление книги из раздела «Отложено» через тултип в кнопке «Сердце».
+	/// </summary>
+	/// <param name="pagePath">Путь к странице (например, "/").</param>
 	[TestCase("/")]
 	[TestCase("/cabinet/putorder/")]
 	[TestCase("/genres/2827/")]
@@ -148,6 +160,10 @@ public class ParametrizedFavoritesTests : BaseTest
 		Assert.That(heartInNavbarNumbers, Is.EqualTo("0"));
 	}
 
+	/// <summary>
+	/// Тест-кейс 4: Закрытие тултипа после добавления товара в Отложенное.
+	/// </summary>
+	/// <param name="pagePath">Путь к странице (например, "/").</param>
 	[TestCase("/")]
 	[TestCase("/cabinet/putorder/")]
 	[TestCase("/genres/2827/")]

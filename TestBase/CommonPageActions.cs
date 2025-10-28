@@ -18,6 +18,9 @@ public class CommonPageActions : BasePage
 		_helper = new Helper(page);
 	}
 
+	/// <summary>
+	/// Принимает модальное окно с политикой cookies, кликая на кнопку.
+	/// </summary>
 	public async Task AcceptModalWithCookies()
 	{
 		await Page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
@@ -28,13 +31,19 @@ public class CommonPageActions : BasePage
 		await Task.CompletedTask;
 	}
 
+	/// <summary>
+	/// Находит первую кнопку сердца на странице и ожидает её видимости.
+	/// </summary>
 	public async Task GetFirstHeartOnPage()
 	{
-		
+
 		_heartIcon = Page.Locator("a.icon-fave:has(span.header-sprite)").First;
 		await Helper.WaitBetweenActions(HeartIcon, isVisible: true, isAttached: true);
 		await Task.CompletedTask;
 	}
+	/// <summary>
+	/// Проверяет статус кнопки сердца, прокручивая её в область видимости.
+	/// </summary>
 	public async Task CheckHeartIconStatus()
 	{
 		await Helper.WaitBetweenActions(HeartIcon, isVisible: true, isAttached: true);
@@ -43,12 +52,18 @@ public class CommonPageActions : BasePage
 		await Task.CompletedTask;
 	}
 
+	/// <summary>
+	/// Находит кнопку сердца в навбаре и ожидает её видимости.
+	/// </summary>
 	public async Task GetHeartInNavbar()
 	{
 		_heartInNavbar = Page.Locator("#minwidth .top-link-main_putorder span.basket-in-dreambox-a");
 		await Helper.WaitBetweenActions(_heartInNavbar, isVisible: true, isAttached: true);
 		await Task.CompletedTask;
 	}
+	/// <summary>
+	/// Проверяет статус кнопки сердца в навбаре, прокручивая её в область видимости.
+	/// </summary>
 	public async Task CheckHeartInNavbarStatus()
 	{
 		await GetHeartInNavbar();
@@ -59,12 +74,18 @@ public class CommonPageActions : BasePage
 	}
 
 
+	/// <summary>
+	/// Выполняет один клик на кнопку сердца.
+	/// </summary>
 	public async Task OneClikHeartIcon()
 	{
 		await _heartIcon.ClickAsync();
 		await Page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
 		await Task.CompletedTask;
 	}
+	/// <summary>
+	/// Выполняет двойной клик на кнопку сердца (добавление и удаление).
+	/// </summary>
 	public async Task DoublClickHeartIcon()
 	{
 		await Helper.WaitBetweenActions(_heartIcon, isVisible: true, isAttached: true);
@@ -75,11 +96,14 @@ public class CommonPageActions : BasePage
 		await Task.CompletedTask;
 	}
 
+	/// <summary>
+	/// Открывает тултип, выполняя двойной клик на кнопку сердца.
+	/// </summary>
 	public async Task OpenTooltip()
 	{
 		await GetFirstHeartOnPage();
 		await CheckHeartIconStatus();
 		await DoublClickHeartIcon();
 	}
-	
+
 }

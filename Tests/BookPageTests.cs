@@ -30,6 +30,10 @@ public class BookPageTests : BaseTest
 		_helper = new Helper(Page);
 	}
 
+	/// <summary>
+	/// Тест-кейс 5: Добавление книги в избранное со страницы книги.
+	/// </summary>
+	/// <param name="pagePath">Путь к странице (например, "/").</param>
 	[TestCase("/")]
 	public async Task TestCase5_AddBookToFavFromBookPage(string pagePath)
 	{
@@ -60,6 +64,10 @@ public class BookPageTests : BaseTest
 		Assert.That(heartInNavbarNumbers, Is.EqualTo("1"));
 	}
 
+	/// <summary>
+	/// Тест-кейс 6: Удаление добавленной книги из избранного со страницы книги.
+	/// </summary>
+	/// <param name="pagePath">Путь к странице (например, "/").</param>
 	[TestCase("/")]
 	public async Task TestCase6_RemoveBookFromFavFromList(string pagePath)
 	{
@@ -88,6 +96,10 @@ public class BookPageTests : BaseTest
 		Assert.That(await heartInNavbar.IsVisibleAsync(), Is.False);
 	}
 
+	/// <summary>
+	/// Тест-кейс 7: Добавление книги в избранное из блока рекомендаций "Книги из жанра".
+	/// </summary>
+	/// <param name="pagePath">Путь к странице (например, "/").</param>
 	[TestCase("/")]
 	public async Task TestCase7_AddBookToFavFromRecList(string pagePath)
 	{
@@ -116,8 +128,12 @@ public class BookPageTests : BaseTest
 		await Expect(imgProductHeartIcon).ToHaveAttributeAsync("alt", "heart-red");
 		Assert.That(await heartInNavbar.IsVisibleAsync(), Is.True);
 		Assert.That(heartInNavbarNumbers, Is.EqualTo("1"));
-	}	
-	
+	}
+
+	/// <summary>
+	/// Тест-кейс 8: Удаление добавленной книги из блока рекомендаций "Книги из жанра" из избранного.
+	/// </summary>
+	/// <param name="pagePath">Путь к странице (например, "/").</param>
 	[TestCase("/")]
 	public async Task TestCase8_RemoveAddedBookFromFromRecList(string pagePath)
 	{
@@ -145,5 +161,5 @@ public class BookPageTests : BaseTest
 		await Expect(imgProductHeartIcon).ToHaveAttributeAsync("alt", "heart-outline-gray-700");
 		await Expect(imgProductHeartIcon).ToHaveAttributeAsync("alt", "heart-outline-gray-700");
 		Assert.That(await heartInNavbar.IsVisibleAsync(), Is.False);
-	}	
+	}
 }

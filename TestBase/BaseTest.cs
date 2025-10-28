@@ -11,6 +11,9 @@ public abstract class BaseTest : PlaywrightTest
 	protected IPage Page { get; private set; } = null!;
 	protected IBrowserContext Context { get; private set; } = null!;
 
+	/// <summary>
+	/// Глобальная настройка теста: загрузка переменных окружения и запуск браузера.
+	/// </summary>
 	[SetUp]
 	public async Task GlobalSetup()
 	{
@@ -52,6 +55,9 @@ public abstract class BaseTest : PlaywrightTest
 		Page = await Context.NewPageAsync();
 	}
 
+	/// <summary>
+	/// Глобальная очистка теста: остановка трассировки и закрытие контекста.
+	/// </summary>
 	[TearDown]
 	public async Task GlobalTeardown()
 	{
@@ -60,7 +66,7 @@ public abstract class BaseTest : PlaywrightTest
 		{
 			if (Context != null)
 			{
-				// Stop tracing and save to file
+				/// Остановка записи теста. Запись в trace.zip
 				await Context?.Tracing.StopAsync(new TracingStopOptions
 				{
 					Path = "../../../trace.zip"
@@ -77,6 +83,10 @@ public abstract class BaseTest : PlaywrightTest
 		await Context.CloseAsync();
 	}
 
+	/// <summary>
+	/// Переходит на страницу сайта labirint.ru с указанным путём.
+	/// </summary>
+	/// <param name="path">Путь к странице (например, "/").</param>
 	protected async Task GotoAsync(string path)
 	{
 		var baseUrl = "https://www.labirint.ru";

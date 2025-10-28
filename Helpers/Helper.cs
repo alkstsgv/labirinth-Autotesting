@@ -11,6 +11,14 @@ public class Helper : BasePage
 
 	}
 
+	/// <summary>
+	/// Ожидает различных состояний элемента (attached, visible, detached, hidden) с загрузкой страницы.
+	/// </summary>
+	/// <param name="locator">Локатор элемента.</param>
+	/// <param name="isVisible">Ожидать видимости.</param>
+	/// <param name="isAttached">Ожидать прикрепления к DOM.</param>
+	/// <param name="isDetached">Ожидать отсоединения от DOM.</param>
+	/// <param name="isHidden">Ожидать скрытия.</param>
 	public async Task WaitBetweenActions(ILocator locator, bool isVisible = false, bool isAttached = false, bool isDetached = false, bool isHidden = false)
 	{
 		if (isAttached == true)
