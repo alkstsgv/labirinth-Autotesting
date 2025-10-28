@@ -48,8 +48,7 @@ public class BookPageTests : BaseTest
 		// === Шаги === //
 		Console.WriteLine("Проход по шагам тест-кейса");
 		await BookPage.ClickFirstBookOnPage();
-		await BookPage.ClickProductHeartIconButton();
-		await BookPage.CheckHeartButtonStatus();
+		await BookPage.OneClickProductHeartButton();
 		var heartInNavbar = BookPage.ProductHeartInNavbar.Locator("span").Nth(1);
 		string? heartInNavbarNumbers = await heartInNavbar.InnerTextAsync();
 		var imgProductHeartIcon = BookPage.ProductHeartIconButton.Locator("img");
@@ -79,10 +78,7 @@ public class BookPageTests : BaseTest
 		// === Шаги === //
 		Console.WriteLine("Проход по шагам тест-кейса");
 		await BookPage.ClickFirstBookOnPage();
-		await BookPage.ClickProductHeartIconButton();
-		await BookPage.CheckHeartButtonStatus();
-		await BookPage.ClickProductHeartIconButton();
-		await BookPage.CheckHeartButtonStatus();
+		await BookPage.DoubleClickProductHeartButton();
 		var heartInNavbar = BookPage.ProductHeartInNavbar.Locator("span").Nth(1);
 		var imgProductHeartIcon = BookPage.ProductHeartIconButton.Locator("img");
 
@@ -110,9 +106,7 @@ public class BookPageTests : BaseTest
 		// === Шаги === //
 		Console.WriteLine("Проход по шагам тест-кейса");
 		await BookPage.ClickFirstBookOnPage();
-		// await Page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
-		await BookPage.ClickProductRecommendationsHeartIconButton();
-		await BookPage.CheckHeartButtonRecommendationsStatus();
+		await BookPage.OneClickProductHeartInRecRow();
 		var heartInNavbar = BookPage.ProductHeartInNavbar.Locator("span").Nth(1);
 		string? heartInNavbarNumbers = await heartInNavbar.InnerTextAsync();
 		var imgProductHeartIcon = BookPage.ProductListHeart.Locator("img");
@@ -142,11 +136,7 @@ public class BookPageTests : BaseTest
 		// === Шаги === //
 		Console.WriteLine("Проход по шагам тест-кейса");
 		await BookPage.ClickFirstBookOnPage();
-		// await Page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
-		await BookPage.ClickProductRecommendationsHeartIconButton();
-		await BookPage.CheckHeartButtonRecommendationsStatus();
-		await BookPage.ClickProductRecommendationsHeartIconButton();
-		await BookPage.CheckHeartButtonRecommendationsStatus();
+		await BookPage.DoubleClickProductHeartInRecRow();
 		var heartInNavbar = BookPage.ProductHeartInNavbar.Locator("span").Nth(1);
 		var imgProductHeartIcon = BookPage.ProductListHeart.Locator("img");
 

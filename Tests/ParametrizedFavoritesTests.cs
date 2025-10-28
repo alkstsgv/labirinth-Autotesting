@@ -26,6 +26,7 @@ public class ParametrizedFavoritesTests : BaseTest
 
 
 	[TestCase("/")]
+	[TestCase("/cabinet/putorder/")]
 	[TestCase("/genres/2827/")]
 	[TestCase("/school/")]
 	public async Task TestCase1_VerifyBookAddedToFavListGeneric(string pagePath)
@@ -82,6 +83,7 @@ public class ParametrizedFavoritesTests : BaseTest
 	}
 
 	[TestCase("/")]
+	[TestCase("/cabinet/putorder/")]
 	[TestCase("/genres/2827/")]
 	[TestCase("/school/")]
 	public async Task TestCase2_VerifyPageWithAddedFavBooksGeneric(string pagePath)
@@ -100,9 +102,7 @@ public class ParametrizedFavoritesTests : BaseTest
 
 		// === Шаги === //
 		Console.WriteLine("Проход по шагам тест-кейса");
-		await CommonPageActions.GetFirstHeartOnPage();
-		await CommonPageActions.CheckHeartIconStatus();
-		await CommonPageActions.DoubleHeartIconClick();
+		await CommonPageActions.OpenTooltip();
 		await Page.Locator(".js-putorder-block-change .b-list-shell-item").Filter(new() { HasText = "Перейти к отложенным" }).ClickAsync();
 
 		// === Ожидаемый результат === //
@@ -111,6 +111,7 @@ public class ParametrizedFavoritesTests : BaseTest
 	}
 
 	[TestCase("/")]
+	[TestCase("/cabinet/putorder/")]
 	[TestCase("/genres/2827/")]
 	[TestCase("/school/")]
 	public async Task TestCase3_VerifyBookRemovedFromFavGeneric(string pagePath)
@@ -129,9 +130,7 @@ public class ParametrizedFavoritesTests : BaseTest
 
 		// === Шаги === //
 		Console.WriteLine("Проход по шагам тест-кейса");
-		await CommonPageActions.GetFirstHeartOnPage();
-		await CommonPageActions.CheckHeartIconStatus();
-		await CommonPageActions.DoubleHeartIconClick();
+		await CommonPageActions.OpenTooltip();
 		await Page.Locator(".js-putorder-block-change .b-list-shell-item").Filter(new() { HasText = "Убрать из отложенных" }).ClickAsync();
 		await CommonPageActions.CheckHeartInNavbarStatus();
 		string? heartInNavbarNumbers = await CommonPageActions.HeartInNavbar.InnerTextAsync();
@@ -150,6 +149,7 @@ public class ParametrizedFavoritesTests : BaseTest
 	}
 
 	[TestCase("/")]
+	[TestCase("/cabinet/putorder/")]
 	[TestCase("/genres/2827/")]
 	[TestCase("/school/")]
 	public async Task TestCase4_CloseTooltip(string pagePath)
@@ -169,9 +169,7 @@ public class ParametrizedFavoritesTests : BaseTest
 
 		// === Шаги === //
 		Console.WriteLine("Проход по шагам тест-кейса");
-		await CommonPageActions.GetFirstHeartOnPage();
-		await CommonPageActions.CheckHeartIconStatus();
-		await CommonPageActions.DoubleHeartIconClick();
+		await CommonPageActions.OpenTooltip();
 		var tooltip = Page.Locator(".js-putorder-block-change .b-dropdown-window-close");
 		await tooltip.ClickAsync();
 		await Page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);

@@ -8,38 +8,39 @@ namespace labirinthAutoTesting.TestBase;
 [TestFixture]
 public abstract class BaseTest : PlaywrightTest
 {
-    protected IPage Page { get; private set; } = null!;
-    protected IBrowserContext Context { get; private set; } = null!;
+	protected IPage Page { get; private set; } = null!;
+	protected IBrowserContext Context { get; private set; } = null!;
 
-    [SetUp]
-    public async Task GlobalSetup()
- {
-  // Загружаем переменные из .env или .env_orig для локального запуска
-  var envFile = File.Exists(".env") ? ".env" : ".env_orig";
-  if (File.Exists(envFile))
-  {
-   DotNetEnv.Env.Load(envFile);
-  }
-
-  // Запускаем браузер
-  var headlessStr = Environment.GetEnvironmentVariable("HEADLESS");
-  bool headless = string.IsNullOrEmpty(headlessStr) || headlessStr.ToLower() == "false"; // true по умолчанию
-  var slowMoStr = Environment.GetEnvironmentVariable("SLOWMO");
-  float slowMo = string.IsNullOrEmpty(slowMoStr) ? 0 : float.Parse(slowMoStr);
-
-  Console.WriteLine($"Loaded from {envFile}, HEADLESS:{headless.GetType()}, Headless mode: {headless}");
-  Console.WriteLine($"SLOWMO: {slowMoStr}, SlowMo: {slowMo}");
-        var browser = await BrowserType.LaunchAsync(new()
+	[SetUp]
+	public async Task GlobalSetup()
+	{
+		// Загружаем переменные из .env или .env_orig для локального запуска
+		var envFile = File.Exists(".env") ? ".env" : ".env_orig";
+		if (File.Exists(envFile))
 		{
-			Headless = true,
+			DotNetEnv.Env.Load(envFile);
+		}
+
+
+		bool headless = (Environment.GetEnvironmentVariable("HEADLESS") ?? "true").ToLower() == "true";
+		float slowMo = 0;
+		var slowMoStr = Environment.GetEnvironmentVariable("SLOWMO");
+		if (!string.IsNullOrEmpty(slowMoStr))
+		{
+			_ = float.TryParse(slowMoStr, out slowMo);
+		}
+		Console.WriteLine($"Loaded from {envFile}, HEADLESS:{headless.GetType()}, Headless mode: {headless}");
+		Console.WriteLine($"SLOWMO: {slowMoStr}, SlowMo: {slowMo}");
+		var browser = await BrowserType.LaunchAsync(new()
+		{
+			Headless = headless,
 			SlowMo = slowMo,
 			Args = new[] { "--no-sandbox", "--disable-dev-shm-usage" }
 		});
 
-        // Создаём контекст с куками
-        Context = await browser.NewContextAsync();
+		// Создаём контекст с куками
+		Context = await browser.NewContextAsync();
 		Console.WriteLine("Tracing started");
-		// Start tracing for debugging
 		try
 		{
 			await Context.Tracing.StartAsync(new TracingStartOptions { Screenshots = true, Snapshots = true });
@@ -48,14 +49,14 @@ public abstract class BaseTest : PlaywrightTest
 		{
 			Console.WriteLine($"Error starting tracing: {ex.Message}");
 		}
-  Page = await Context.NewPageAsync();
-    }
+		Page = await Context.NewPageAsync();
+	}
 
-    [TearDown]
-    public async Task GlobalTeardown()
+	[TearDown]
+	public async Task GlobalTeardown()
 	{
 		Console.WriteLine("Attempting to stop tracing");
-        try
+		try
 		{
 			if (Context != null)
 			{
@@ -67,18 +68,18 @@ public abstract class BaseTest : PlaywrightTest
 				});
 
 				Console.WriteLine("Tracing stopped");
-			 			}
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error stopping tracing: {ex.Message}");
-        }
+			}
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine($"Error stopping tracing: {ex.Message}");
+		}
 		await Context.CloseAsync();
-    }
-	
-    protected async Task GotoAsync(string path)
-    {
-        var baseUrl = "https://www.labirint.ru";
+	}
+
+	protected async Task GotoAsync(string path)
+	{
+		var baseUrl = "https://www.labirint.ru";
 		await Page.GotoAsync(baseUrl.TrimEnd('/') + "/" + path.TrimStart('/'));
-    }
+	}
 }

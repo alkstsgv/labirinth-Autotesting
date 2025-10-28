@@ -6,28 +6,31 @@ namespace labirinthAutoTesting.TestBase;
 
 public class CommonPageActions : BasePage
 {
-	
+
 	private PlaywrightTest _playwright = new PlaywrightTest();
 	private ILocator _heartIcon = null!;
 	public ILocator HeartIcon => _heartIcon;
 	private ILocator _heartInNavbar = null!;
 	public ILocator HeartInNavbar => _heartInNavbar;
 	private Helper _helper; public Helper Helper => _helper ??= new Helper(Page);
-	public CommonPageActions (IPage page) : base(page)
+	public CommonPageActions(IPage page) : base(page)
 	{
 		_helper = new Helper(page);
 	}
 
 	public async Task AcceptModalWithCookies()
 	{
+		await Page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
 		var modalWithCookies = Page.Locator(".cookie-policy button");
 		await modalWithCookies.ClickAsync();
 		await Helper.WaitBetweenActions(modalWithCookies, isAttached: true);
+		await Page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
 		await Task.CompletedTask;
 	}
 
 	public async Task GetFirstHeartOnPage()
 	{
+		
 		_heartIcon = Page.Locator("a.icon-fave:has(span.header-sprite)").First;
 		await Helper.WaitBetweenActions(HeartIcon, isVisible: true, isAttached: true);
 		await Task.CompletedTask;
@@ -56,15 +59,27 @@ public class CommonPageActions : BasePage
 	}
 
 
-
-	public async Task DoubleHeartIconClick()
+	public async Task OneClikHeartIcon()
+	{
+		await _heartIcon.ClickAsync();
+		await Page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
+		await Task.CompletedTask;
+	}
+	public async Task DoublClickHeartIcon()
 	{
 		await Helper.WaitBetweenActions(_heartIcon, isVisible: true, isAttached: true);
-		await _heartIcon.ClickAsync();
+		await OneClikHeartIcon();
 		await Helper.WaitBetweenActions(_heartIcon, isVisible: true, isAttached: true);
-		await _heartIcon.ClickAsync();
+		await OneClikHeartIcon();
 		await Helper.WaitBetweenActions(_heartIcon, isVisible: true, isAttached: true);
 		await Task.CompletedTask;
 	}
 
+	public async Task OpenTooltip()
+	{
+		await GetFirstHeartOnPage();
+		await CheckHeartIconStatus();
+		await DoublClickHeartIcon();
+	}
+	
 }

@@ -27,6 +27,7 @@ public class BookPage : BasePage
 
 	public async Task ClickFirstBookOnPage()
 	{
+		await Page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
 		await ProductCard.First.ClickAsync();
 	}
 	public async Task ClickProductHeartIconButton()
@@ -71,6 +72,29 @@ public class BookPage : BasePage
 		var heartInNavbar = _productHeartInNavbar.Locator("span").Nth(1);
 		var heartInNavbarNumbers = await heartInNavbar.InnerTextAsync();
 		return heartInNavbarNumbers;
-		
+	}
+
+	public async Task OneClickProductHeartButton()
+	{
+		await ClickProductHeartIconButton();
+		await CheckHeartButtonStatus();
+	}
+
+	public async Task DoubleClickProductHeartButton()
+	{
+		await OneClickProductHeartButton();
+		await OneClickProductHeartButton();
+	}
+
+	public async Task OneClickProductHeartInRecRow()
+	{
+		await ClickProductRecommendationsHeartIconButton();
+		await CheckHeartButtonRecommendationsStatus();
+		await Page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
+	}
+	public async Task DoubleClickProductHeartInRecRow()
+	{
+		await OneClickProductHeartInRecRow();
+		await OneClickProductHeartInRecRow();
 	}
 }
