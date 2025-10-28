@@ -54,7 +54,7 @@ public class ParametrizedFavoritesTests : BaseTest
 		var productCard = CommonPageActions.HeartIcon.Locator("xpath=ancestor::div[contains(@class, 'product')]");
 		var bookTitle = productCard.Locator("a.cover").First;
 		string? titleText = await bookTitle.GetAttributeAsync("href");
-		string? trimmedTitleText = titleText.Remove(titleText.Length - 1);
+		string? trimmedTitleText = titleText?.Remove(titleText.Length - 1);
 		await CommonPageActions.HeartIcon.ClickAsync();
 
 		var popupAfterAddToFavList = Page.Locator("#minwidth .js-good-added");

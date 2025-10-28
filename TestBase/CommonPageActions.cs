@@ -81,6 +81,7 @@ public class CommonPageActions : BasePage
 	{
 		await _heartIcon.ClickAsync();
 		await Page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
+		await Helper.WaitBetweenActions(_heartIcon, isVisible: true, isAttached: true);
 		await Task.CompletedTask;
 	}
 	/// <summary>
@@ -90,8 +91,10 @@ public class CommonPageActions : BasePage
 	{
 		await Helper.WaitBetweenActions(_heartIcon, isVisible: true, isAttached: true);
 		await OneClikHeartIcon();
+		await Page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
 		await Helper.WaitBetweenActions(_heartIcon, isVisible: true, isAttached: true);
 		await OneClikHeartIcon();
+		await Page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
 		await Helper.WaitBetweenActions(_heartIcon, isVisible: true, isAttached: true);
 		await Task.CompletedTask;
 	}
@@ -102,7 +105,9 @@ public class CommonPageActions : BasePage
 	public async Task OpenTooltip()
 	{
 		await GetFirstHeartOnPage();
+		await Page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
 		await CheckHeartIconStatus();
+		await Page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
 		await DoublClickHeartIcon();
 	}
 
